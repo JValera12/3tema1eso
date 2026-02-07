@@ -1,12 +1,376 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Configuración para comportamiento de App desde la Web -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0984e3">
+    
+    <title>Reto Divisibilidad - 1º ESO</title>
+    
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #0984e3;
+            --accent: #fdcb6e;
+            --correct: #00b894;
+            --wrong: #d63031;
+            --dark: #2d3436;
+            --light: #f1f2f6;
+        }
+
+        /* Reset para Web App */
+        * { 
+            box-sizing: border-box; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+            touch-action: pan-y;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--primary);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            background-color: #fff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Aspecto de móvil en ordenadores */
+        @media (min-width: 520px) {
+            #app-container {
+                height: 92vh;
+                border-radius: 25px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            }
+        }
+
+        .screen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100%);
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(0);
+            z-index: 10;
+        }
+
+        /* Pantalla de Inicio */
+        #home-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), #74b9ff);
+            color: white;
+            transform: translateX(0);
+        }
+
+        .hero-icon {
+            font-size: 5.5rem;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .btn-play {
+            background-color: var(--accent);
+            color: var(--dark);
+            font-size: 1.6rem;
+            font-weight: 800;
+            padding: 22px 65px;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 6px 0 #e17055;
+            cursor: pointer;
+            margin-top: 35px;
+            transition: all 0.1s;
+        }
+
+        .btn-play:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #e17055;
+        }
+
+        /* Elementos del Juego */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+            margin-bottom: 25px;
+        }
+
+        .status-badge {
+            font-weight: 800;
+            background: var(--dark);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .question-box {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            color: var(--dark);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .opt-button {
+            background: white;
+            border: 2px solid var(--light);
+            padding: 20px;
+            border-radius: 18px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: left;
+            transition: 0.2s;
+            cursor: pointer;
+            width: 100%;
+            outline: none;
+        }
+
+        .opt-button.correct { background: var(--correct); color: white; border-color: var(--correct); box-shadow: 0 4px 0 #009475; }
+        .opt-button.wrong { background: var(--wrong); color: white; border-color: var(--wrong); box-shadow: 0 4px 0 #b32626; }
+
+        /* Modal de Feedback */
+        #feedback-panel {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            background: white;
+            padding: 30px 25px;
+            border-top-left-radius: 35px;
+            border-top-right-radius: 35px;
+            box-shadow: 0 -15px 40px rgba(0,0,0,0.15);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+            z-index: 100;
+            text-align: center;
+        }
+
+        #feedback-panel.show { transform: translateY(0); }
+
+        .btn-continue {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 20px;
+            border-radius: 18px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        /* Pantalla de Resultados */
+        #result-screen {
+            text-align: center;
+            justify-content: center;
+            background: #f8f9fa;
+        }
+
+        .total-points {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>This is my first HTML file.</p>
+
+    <div id="app-container">
+        
+        <!-- PANTALLA INICIAL -->
+        <div id="home-screen" class="screen active">
+            <div class="hero-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+            <h1 style="font-family: 'Fredoka'; font-size: 3.2rem; margin: 0; line-height: 1;">RETO<br>TEMA 3</h1>
+            <p style="font-size: 1.2rem; opacity: 0.9; margin-top: 10px;">Divisibilidad - Matemáticas</p>
+            <button class="btn-play" onclick="initGame()">¡JUGAR AHORA!</button>
+        </div>
+
+        <!-- PANTALLA DE JUEGO -->
+        <div id="game-screen" class="screen">
+            <div class="header">
+                <span id="q-number" class="status-badge">PREGUNTA 1/10</span>
+                <span style="color: var(--primary); font-weight: 800; font-size: 1.2rem;">
+                    <i class="fa-solid fa-star" style="color: var(--accent);"></i> <span id="score-val">0</span>
+                </span>
+            </div>
+            
+            <div class="question-box" id="question-text"></div>
+            <div class="options-list" id="options-grid"></div>
+
+            <div id="feedback-panel">
+                <h2 id="feedback-title" style="margin: 0 0 8px 0; font-size: 1.8rem;"></h2>
+                <p id="feedback-desc" style="margin-bottom: 25px; color: #636e72; line-height: 1.4; font-size: 1.1rem;"></p>
+                <button class="btn-continue" onclick="moveToNext()">CONTINUAR <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE RESULTADOS -->
+        <div id="result-screen" class="screen">
+            <i class="fa-solid fa-medal" style="font-size: 6rem; color: var(--accent);"></i>
+            <h1 style="font-family: 'Fredoka'; margin: 20px 0 0 0;">¡Objetivo Logrado!</h1>
+            <div class="total-points" id="final-points">0</div>
+            <p id="motivational-text" style="padding: 0 20px; font-weight: 600; color: #636e72; font-size: 1.2rem;"></p>
+            <button class="btn-play" onclick="location.reload()">VOLVER A INTENTAR</button>
+        </div>
+
+    </div>
+
+    <script>
+        const questionPool = [
+            { q: "¿Es el número 411 divisible por 3?", a: ["No", "Sí, porque 4+1+1=6", "Sí, porque es impar", "No, porque termina en 1"], c: 1, i: "Efectivamente. La suma de sus cifras es 6, que es un múltiplo de 3." },
+            { q: "¿Cuál de estos es un número primo?", a: ["15", "21", "13", "18"], c: 2, i: "Correcto. El 13 solo puede dividirse por 1 y por sí mismo." },
+            { q: "El m.c.m. de 4 y 6 es...", a: ["2", "24", "12", "10"], c: 2, i: "¡Muy bien! 12 es el primer número que aparece en la tabla del 4 y del 6." },
+            { q: "Si al dividir 60 entre 15 el resto es 0...", a: ["15 es múltiplo de 60", "60 es divisible por 15", "60 es divisor de 15", "No tienen relación"], c: 1, i: "Exacto. Decimos que 60 es divisible por 15 porque la división es exacta." },
+            { q: "El m.c.d. de 10 y 15 es...", a: ["5", "30", "1", "2"], c: 0, i: "Correcto. 5 es el mayor número que divide a ambos a la vez." },
+            { q: "La descomposición factorial de 12 es:", a: ["3 x 4", "2 x 2 x 3", "2 x 6", "2 x 3 x 3"], c: 1, i: "¡Bien! 12 = 2² x 3." },
+            { q: "¿Qué número es divisible por 5?", a: ["123", "551", "290", "104"], c: 2, i: "Los números divisibles por 5 siempre terminan en 0 o 5." },
+            { q: "¿Qué caracteriza a un número compuesto?", a: ["Tiene 1 divisor", "Solo 2 divisores", "Más de 2 divisores", "Es un número par"], c: 2, i: "Efectivamente. A diferencia de los primos, tienen varios divisores." },
+            { q: "Si 'a' es múltiplo de 'b', entonces 'b' es...", a: ["Divisor de 'a'", "Múltiplo de 'a'", "Cero", "Número primo"], c: 0, i: "Exacto. Es la relación inversa de la divisibilidad." },
+            { q: "¿Quién recopiló la teoría de divisibilidad en 'Los Elementos'?", a: ["Pitágoras", "Tales", "Euclides", "Eratóstenes"], c: 2, i: "Fue Euclides en el siglo III a.C. en Alejandría." }
+        ];
+
+        let currentIdx = 0;
+        let points = 0;
+        let sessionQuestions = [];
+
+        function initGame() {
+            sessionQuestions = [...questionPool].sort(() => Math.random() - 0.5);
+            currentIdx = 0; 
+            points = 0;
+            switchScreen('game-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = sessionQuestions[currentIdx];
+            document.getElementById('q-number').innerText = `PREGUNTA ${currentIdx + 1}/10`;
+            document.getElementById('score-val').innerText = points;
+            document.getElementById('question-text').innerText = data.q;
+            
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            
+            data.a.forEach((option, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-button';
+                btn.innerText = option;
+                btn.onclick = () => verifyAnswer(i, btn);
+                grid.appendChild(btn);
+            });
+            
+            document.getElementById('feedback-panel').classList.remove('show');
+        }
+
+        function verifyAnswer(idx, btn) {
+            const data = sessionQuestions[currentIdx];
+            const allBtns = document.querySelectorAll('.opt-button');
+            allBtns.forEach(b => b.disabled = true);
+
+            const panel = document.getElementById('feedback-panel');
+            const title = document.getElementById('feedback-title');
+            
+            if(idx === data.c) {
+                btn.classList.add('correct');
+                points += 10;
+                title.innerText = "¡EXCELENTE! 🌟";
+                title.style.color = "var(--correct)";
+            } else {
+                btn.classList.add('wrong');
+                allBtns[data.c].classList.add('correct');
+                title.innerText = "¡UPS! 💡";
+                title.style.color = "var(--wrong)";
+            }
+            
+            document.getElementById('feedback-desc').innerText = data.i;
+            panel.classList.add('show');
+        }
+
+        function moveToNext() {
+            currentIdx++;
+            if(currentIdx < 10) {
+                loadQuestion();
+            } else {
+                showFinalResults();
+            }
+        }
+
+        function showFinalResults() {
+            switchScreen('result-screen');
+            document.getElementById('final-points').innerText = points;
+            
+            let message = "";
+            if(points >= 90) message = "¡Impresionante! Eres un maestro de la divisibilidad.";
+            else if(points >= 70) message = "¡Muy bien hecho! Tienes los conceptos muy claros.";
+            else if(points >= 50) message = "¡Buen trabajo! Has aprobado, pero puedes mejorar.";
+            else message = "¡No te rindas! Repasa un poco más el Tema 3 y vuelve a intentarlo.";
+            
+            document.getElementById('motivational-text').innerText = message;
+        }
+
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+    </script>
 </body>
 </html>
