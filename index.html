@@ -70,7 +70,7 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            padding: 25px;
+            padding: clamp(15px, 5vw, 25px);
             display: flex;
             flex-direction: column;
             background: #fff;
@@ -78,6 +78,7 @@
             opacity: 0;
             pointer-events: none;
             transform: translateX(100%);
+            overflow-y: auto;
         }
 
         .screen.active {
@@ -95,13 +96,34 @@
             background: linear-gradient(135deg, var(--primary), #74b9ff);
             color: white;
             transform: translateX(0);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .hero-icon {
-            font-size: 5.5rem;
-            margin-bottom: 25px;
+            font-size: clamp(3rem, 12vw, 5.5rem);
+            margin-bottom: clamp(15px, 5vw, 25px);
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
             animation: float 3s ease-in-out infinite;
+        }
+
+        #home-screen h1 {
+            font-family: 'Fredoka';
+            font-size: clamp(2rem, 7vw, 3.2rem);
+            margin: 0;
+            line-height: 1.1;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        #home-screen p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            opacity: 0.9;
+            margin-top: 10px;
+            animation: slideUp 0.6s ease-out 0.2s both;
         }
 
         @keyframes float {
@@ -109,18 +131,35 @@
             50% { transform: translateY(-15px); }
         }
 
+        @keyframes slideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         .btn-play {
             background-color: var(--accent);
             color: var(--dark);
-            font-size: 1.6rem;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
             font-weight: 800;
-            padding: 22px 65px;
+            padding: clamp(16px, 4vw, 22px) clamp(45px, 10vw, 65px);
             border-radius: 50px;
             border: none;
             box-shadow: 0 6px 0 #e17055;
             cursor: pointer;
-            margin-top: 35px;
+            margin-top: clamp(20px, 5vw, 35px);
             transition: all 0.1s;
+            animation: bounceIn 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .btn-play:active {
@@ -133,104 +172,278 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 15px;
+            padding-bottom: clamp(10px, 3vw, 15px);
             border-bottom: 2px solid var(--light);
-            margin-bottom: 25px;
+            margin-bottom: clamp(15px, 4vw, 25px);
+            animation: slideDown 0.5s ease-out;
         }
 
         .status-badge {
             font-weight: 800;
             background: var(--dark);
             color: white;
-            padding: 6px 15px;
+            padding: clamp(5px, 2vw, 6px) clamp(12px, 3vw, 15px);
             border-radius: 12px;
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+        }
+
+        .score-display {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+        }
+
+        .score-display i {
+            color: var(--accent);
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(15deg); }
         }
 
         .question-box {
-            background: var(--light);
-            padding: 25px;
+            background: linear-gradient(135deg, var(--light), #e8f4f8);
+            padding: clamp(18px, 5vw, 25px);
             border-radius: 20px;
             text-align: center;
-            font-size: 1.4rem;
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
             font-weight: 700;
-            min-height: 140px;
+            min-height: clamp(100px, 20vw, 140px);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
+            margin-bottom: clamp(15px, 4vw, 25px);
             color: var(--dark);
+            line-height: 1.4;
+            border-left: 5px solid var(--primary);
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .options-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: clamp(8px, 2vw, 12px);
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .options-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .options-list::-webkit-scrollbar-track {
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .options-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
 
         .opt-button {
             background: white;
             border: 2px solid var(--light);
-            padding: 20px;
+            padding: clamp(15px, 4vw, 20px);
             border-radius: 18px;
-            font-size: 1.1rem;
+            font-size: clamp(0.95rem, 3vw, 1.1rem);
             font-weight: 600;
             text-align: left;
-            transition: 0.2s;
+            transition: all 0.2s ease;
             cursor: pointer;
             width: 100%;
             outline: none;
+            position: relative;
+            overflow: hidden;
+            animation: slideInLeft 0.3s ease-out backwards;
         }
 
-        .opt-button.correct { background: var(--correct); color: white; border-color: var(--correct); box-shadow: 0 4px 0 #009475; }
-        .opt-button.wrong { background: var(--wrong); color: white; border-color: var(--wrong); box-shadow: 0 4px 0 #b32626; }
+        .opt-button:nth-child(1) { animation-delay: 0s; }
+        .opt-button:nth-child(2) { animation-delay: 0.1s; }
+        .opt-button:nth-child(3) { animation-delay: 0.2s; }
+        .opt-button:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .opt-button:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .opt-button:disabled {
+            cursor: not-allowed;
+        }
+
+        .opt-button.correct {
+            background: var(--correct);
+            color: white;
+            border-color: var(--correct);
+            box-shadow: 0 4px 0 #009475, inset 0 0 20px rgba(0,0,0,0.1);
+            animation: correctPulse 0.6s ease-out;
+        }
+
+        .opt-button.wrong {
+            background: var(--wrong);
+            color: white;
+            border-color: var(--wrong);
+            box-shadow: 0 4px 0 #b32626, inset 0 0 20px rgba(0,0,0,0.1);
+            animation: shake 0.5s ease-out;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
 
         /* Modal de Feedback */
         #feedback-panel {
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 500px;
+            left: 50%;
+            transform: translateX(-50%);
             background: white;
-            padding: 30px 25px;
+            padding: clamp(20px, 5vw, 30px) clamp(15px, 4vw, 25px);
             border-top-left-radius: 35px;
             border-top-right-radius: 35px;
             box-shadow: 0 -15px 40px rgba(0,0,0,0.15);
-            transform: translateY(100%);
+            transform: translateX(-50%) translateY(100%);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15);
             z-index: 100;
             text-align: center;
         }
 
-        #feedback-panel.show { transform: translateY(0); }
+        #feedback-panel.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #feedback-title {
+            margin: 0 0 8px 0;
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            animation: popIn 0.4s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #feedback-desc {
+            margin-bottom: clamp(15px, 4vw, 25px);
+            color: #636e72;
+            line-height: 1.5;
+            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            animation: fadeIn 0.5s ease-out 0.2s both;
+        }
 
         .btn-continue {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #74b9ff);
             color: white;
             border: none;
             width: 100%;
-            padding: 20px;
+            padding: clamp(15px, 4vw, 20px);
             border-radius: 18px;
-            font-size: 1.25rem;
+            font-size: clamp(1rem, 3vw, 1.25rem);
             font-weight: 700;
-            margin-top: 20px;
+            margin-top: clamp(15px, 3vw, 20px);
             cursor: pointer;
+            transition: all 0.2s ease;
+            animation: fadeIn 0.5s ease-out 0.3s both;
+        }
+
+        .btn-continue:active {
+            transform: scale(0.98);
         }
 
         /* Pantalla de Resultados */
         #result-screen {
             text-align: center;
             justify-content: center;
-            background: #f8f9fa;
+            background: linear-gradient(180deg, #f8f9fa, var(--light));
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        #result-screen i {
+            font-size: clamp(4rem, 15vw, 6rem);
+            color: var(--accent);
+            animation: float 2s ease-in-out infinite;
+        }
+
+        #result-screen h1 {
+            font-family: 'Fredoka';
+            margin: clamp(15px, 4vw, 20px) 0 0 0;
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            animation: slideDown 0.5s ease-out;
         }
 
         .total-points {
-            font-size: 5rem;
+            font-size: clamp(3rem, 14vw, 5rem);
             font-weight: 800;
             color: var(--primary);
-            margin: 10px 0;
+            margin: clamp(8px, 3vw, 10px) 0;
             font-family: 'Fredoka', sans-serif;
+            animation: countUp 0.8s ease-out;
         }
 
+        @keyframes countUp {
+            from { transform: scale(0.3); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        #motivational-text {
+            padding: clamp(10px, 3vw, 20px);
+            font-weight: 600;
+            color: #636e72;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            line-height: 1.5;
+            animation: slideUp 0.5s ease-out 0.2s both;
+        }
+
+        /* Barra de progreso visual */
+        .progress-bar {
+            height: 4px;
+            background: var(--light);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: clamp(10px, 3vw, 15px);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+
+        /* Responsive ajustes */
+        @media (max-height: 600px) {
+            #feedback-panel {
+                max-height: 45vh;
+            }
+
+            .options-list {
+                gap: 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -240,17 +453,21 @@
         <!-- PANTALLA INICIAL -->
         <div id="home-screen" class="screen active">
             <div class="hero-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-            <h1 style="font-family: 'Fredoka'; font-size: 3.2rem; margin: 0; line-height: 1;">RETO<br>TEMA 3</h1>
-            <p style="font-size: 1.2rem; opacity: 0.9; margin-top: 10px;">Divisibilidad - Matemáticas</p>
+            <h1>RETO<br>TEMA 3</h1>
+            <p>Divisibilidad - Matemáticas</p>
             <button class="btn-play" onclick="initGame()">¡JUGAR AHORA!</button>
         </div>
 
         <!-- PANTALLA DE JUEGO -->
         <div id="game-screen" class="screen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+
             <div class="header">
                 <span id="q-number" class="status-badge">PREGUNTA 1/10</span>
-                <span style="color: var(--primary); font-weight: 800; font-size: 1.2rem;">
-                    <i class="fa-solid fa-star" style="color: var(--accent);"></i> <span id="score-val">0</span>
+                <span class="score-display">
+                    <i class="fa-solid fa-star"></i> <span id="score-val">0</span>
                 </span>
             </div>
             
@@ -258,18 +475,18 @@
             <div class="options-list" id="options-grid"></div>
 
             <div id="feedback-panel">
-                <h2 id="feedback-title" style="margin: 0 0 8px 0; font-size: 1.8rem;"></h2>
-                <p id="feedback-desc" style="margin-bottom: 25px; color: #636e72; line-height: 1.4; font-size: 1.1rem;"></p>
+                <h2 id="feedback-title"></h2>
+                <p id="feedback-desc"></p>
                 <button class="btn-continue" onclick="moveToNext()">CONTINUAR <i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
 
         <!-- PANTALLA DE RESULTADOS -->
         <div id="result-screen" class="screen">
-            <i class="fa-solid fa-medal" style="font-size: 6rem; color: var(--accent);"></i>
-            <h1 style="font-family: 'Fredoka'; margin: 20px 0 0 0;">¡Objetivo Logrado!</h1>
+            <i class="fa-solid fa-medal"></i>
+            <h1>¡Objetivo Logrado!</h1>
             <div class="total-points" id="final-points">0</div>
-            <p id="motivational-text" style="padding: 0 20px; font-weight: 600; color: #636e72; font-size: 1.2rem;"></p>
+            <p id="motivational-text"></p>
             <button class="btn-play" onclick="location.reload()">VOLVER A INTENTAR</button>
         </div>
 
@@ -303,6 +520,9 @@
 
         function loadQuestion() {
             const data = sessionQuestions[currentIdx];
+            const progress = ((currentIdx + 1) / 10) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            
             document.getElementById('q-number').innerText = `PREGUNTA ${currentIdx + 1}/10`;
             document.getElementById('score-val').innerText = points;
             document.getElementById('question-text').innerText = data.q;
